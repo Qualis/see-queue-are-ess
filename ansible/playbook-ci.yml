@@ -6,4 +6,5 @@
     - environment-core
     - environment-openjdk
     - environment-jenkins
+    - environment-clojure
     - continuous-integration
