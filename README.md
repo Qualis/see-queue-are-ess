@@ -4,7 +4,7 @@ A CQRS library for Clojure.
 
 NOTE: this project uses git submodules so you will want to clone recursively to have all expected behaviours.
 
-* `git clone --recursive git@git.aconex.com:charlie-quebec-romeo-sierra`
+* `git clone --recursive git@git.aconex.com:charlie-quebec-romeo-sierra.git`
 
 NOTE: The submodules are hosted on GitHub, ensure you have setup your GitHub access.
 

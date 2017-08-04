@@ -17,7 +17,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "dev", primary: true do |dev|
     dev.vm.box = "ubuntu/trusty64"
 
-    dev.vm.hostname = "vagrant-see-queue-are-ess"
+    dev.vm.hostname = "vagrant-charlie-quebec-romeo-sierra"
     dev.vm.network :private_network, type: "dhcp"
 
     dev.vm.provision "ansible" do |ansible|
@@ -35,7 +35,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.define "ci" do |ci|
     ci.vm.box = "ubuntu/trusty64"
 
-    ci.vm.hostname = "vagrant-see-queue-are-ess-ci"
+    ci.vm.hostname = "vagrant-charlie-quebec-romeo-sierra-ci"
     ci.vm.network :private_network, type: "dhcp"
 
     ci.vm.provision "ansible" do |ansible|
