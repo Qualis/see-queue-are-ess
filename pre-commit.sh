@@ -6,4 +6,4 @@ lein do clean, deps
 
 lein test
 unit=$?
-echo_result "Unit tests" $unit
+echo_result "Tests" $unit

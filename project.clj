@@ -4,7 +4,10 @@
                  [trptcolin/versioneer "0.2.0"]]
   :min-lein-version "2.0.0"
   :pedantic? :abort
+
+
   :profiles {:dev
-             {:aliases {"test" "midje"}
-              :plugins [[lein-midje "3.2.1"]]
+             {:aliases {"test" ["do" ["midje"] ["kibit"] ["kibit" "test"]]}
+              :plugins [[lein-midje "3.2.1"]
+                        [lein-kibit "0.1.5" :exclusions [org.clojure/clojure]]]
               :dependencies [[midje "1.8.3"]]}})
