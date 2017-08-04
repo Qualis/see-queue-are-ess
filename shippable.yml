@@ -5,6 +5,4 @@ lein:
 
 build:
   ci:
-    - lein deps
-    - lein test
-    - lein quality
+    - ./pre-commit.sh
