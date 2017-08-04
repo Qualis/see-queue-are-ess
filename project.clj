@@ -8,7 +8,8 @@
 
   :profiles {:dev
              {:aliases {"test" "midje"
-                        "quality" ["do" ["kibit"] ["kibit" "test"]]}
+                        "quality" ["do" ["eastwood"] ["kibit"] ["kibit" "test"]]}
               :plugins [[lein-midje "3.2.1"]
+                        [jonase/eastwood "0.2.4"]
                         [lein-kibit "0.1.5" :exclusions [org.clojure/clojure]]]
               :dependencies [[midje "1.8.3"]]}})
