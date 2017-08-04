@@ -2,7 +2,9 @@
 
 source bash/common.sh
 
-lein do clean, deps
+lein with-profile quality do clean, deps
+
+lein ancient
 
 lein test
 unit=$?

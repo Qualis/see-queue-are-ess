@@ -8,6 +8,7 @@
 
   :profiles {:dev
              {:aliases {"test" "midje"
+                        "ancient" ["with-profile" "quality" "ancient"]
                         "quality" ["with-profile" "quality" "test"]}
               :plugins [[lein-midje "3.2.1"
                          :exclusions [org.clojure/tools.namespace]]]
@@ -23,9 +24,10 @@
                                                     ["eastwood"]
                                                     ["kibit"]
                                                     ["kibit" "test"]]}
-                        :plugins [[jonase/eastwood "0.2.4"]
+                        :plugins [[lein-ancient "0.6.10"]
                                   [lein-bikeshed "0.4.1"
                                    :exclusions [org.clojure/tools.namespace
                                                 org.clojure/tools.cli]]
+                                  [jonase/eastwood "0.2.4"]
                                   [lein-kibit "0.1.5"
                                    :exclusions [org.clojure/clojure]]]}]})
