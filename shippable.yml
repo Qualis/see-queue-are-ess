@@ -3,6 +3,9 @@ language: clojure
 lein:
   - lein2
 
+git:
+  submodules: false
+
 build:
   ci:
     - ./pre-commit.sh
