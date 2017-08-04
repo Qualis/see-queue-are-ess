@@ -1,5 +1,5 @@
-(ns see-queue-are-ess.core-test
-  (:require [see-queue-are-ess.core :as core]
+(ns charlie-quebec-romeo-sierra.core-test
+  (:require [charlie-quebec-romeo-sierra.core :as core]
             [trptcolin.versioneer.core :as versioning])
   (:use [midje.sweet :only [fact =>]]))
 
@@ -8,4 +8,4 @@
   (core/version) => ..version..
   (provided
     (versioning/get-version "is.qual"
-                            "see-queue-are-ess") => ..version..))
+                            "charlie-quebec-romeo-sierra") => ..version..))

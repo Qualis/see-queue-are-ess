@@ -1,10 +1,10 @@
-# see-queue-are-ess
+# charlie-quebec-romeo-sierra
 
 A CQRS library for Clojure.
 
 NOTE: this project uses git submodules so you will want to clone recursively to have all expected behaviours.
 
-* `git clone --recursive git@git.aconex.com:see-queue-are-ess`
+* `git clone --recursive git@git.aconex.com:charlie-quebec-romeo-sierra`
 
 NOTE: The submodules are hosted on GitHub, ensure you have setup your GitHub access.
 
@@ -41,11 +41,11 @@ Start the application in:
 1. developer mode (automatically detects code changes): `lein run-dev`
 2. production mode: `lein run`
 
-Navigate to [vagrant-see-queue-are-ess.local](http://vagrant-see-queue-are-ess.local).
+Navigate to [vagrant-charlie-quebec-romeo-sierra.local](http://vagrant-charlie-quebec-romeo-sierra.local).
 
 ## Continuous Integration with Vagrant
 
-Navigate to [vagrant-see-queue-are-ess-ci.local:8080](http://vagrant-see-queue-are-ess-ci.local:8080).
+Navigate to [vagrant-charlie-quebec-romeo-sierra-ci.local:8080](http://vagrant-charlie-quebec-romeo-sierra-ci.local:8080).
 
 ## Links
 * [Clojure](https://clojure.org)

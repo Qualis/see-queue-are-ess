@@ -1,3 +1,3 @@
 # Introduction
 
-_See Queue Are Ess_ is a CQRS library for Clojure.
+_Charlie Quebec Romeo Sierra_ is a CQRS library for Clojure.
