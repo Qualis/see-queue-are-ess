@@ -7,7 +7,8 @@
 
 
   :profiles {:dev
-             {:aliases {"test" ["do" ["midje"] ["kibit"] ["kibit" "test"]]}
+             {:aliases {"test" "midje"
+                        "quality" ["do" ["kibit"] ["kibit" "test"]]}
               :plugins [[lein-midje "3.2.1"]
                         [lein-kibit "0.1.5" :exclusions [org.clojure/clojure]]]
               :dependencies [[midje "1.8.3"]]}})
