@@ -2,7 +2,7 @@
 
 source bash/common.sh
 
-lein with-profile quality do clean, deps
+lein do clean, deps
 
 lein ancient
 
