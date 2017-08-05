@@ -34,15 +34,6 @@ To run tests and generate reports:
 
 * `./pre-commit.sh`
 
-## Starting the application
-
-Start the application in:
-
-1. developer mode (automatically detects code changes): `lein run-dev`
-2. production mode: `lein run`
-
-Navigate to [vagrant-charlie-quebec-romeo-sierra.local](http://vagrant-charlie-quebec-romeo-sierra.local).
-
 ## Continuous Integration with Vagrant
 
 Navigate to [vagrant-charlie-quebec-romeo-sierra-ci.local:8080](http://vagrant-charlie-quebec-romeo-sierra-ci.local:8080).
