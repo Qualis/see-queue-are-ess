@@ -10,3 +10,6 @@
 [submodule "ansible/roles/environment-clojure"]
 	path = ansible/roles/environment-clojure
 	url = git@github.com:svo/environment-clojure.git
+[submodule "ansible/roles/environment-docker"]
+	path = ansible/roles/environment-docker
+	url = git@github.com:svo/environment-docker.git

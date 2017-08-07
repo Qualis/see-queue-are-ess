@@ -6,3 +6,10 @@
     - environment-core
     - environment-openjdk
     - environment-clojure
+    - environment-docker
+
+  post_tasks:
+
+    - name: Add vagrant user to docker group
+      user: name=vagrant groups=docker append=yes
+      become: yes
