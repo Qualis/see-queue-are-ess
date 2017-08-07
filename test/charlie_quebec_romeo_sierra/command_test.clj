@@ -5,6 +5,8 @@
             [charlie-quebec-romeo-sierra.event
              :as event
              :refer :all]
+            [charlie-quebec-romeo-sierra.repository
+             :as repository]
             [midje.open-protocols :refer [defrecord-openly]])
   (:use [midje.sweet :only [facts fact => provided throws]]))
 
@@ -41,12 +43,19 @@
           (#'command/find-handler ..type_of..) => handler)))
 
     (fact
-      "should process command"
+      "should handle command"
       (let [command (->TestCommand)
             handler (->TestCommandHandler)]
-        (command/process command) => (list (->TestEvent))
+        (#'command/generate-events command) => (list (->TestEvent))
         (provided
-          (#'command/find-handler ..type_of..) => handler))))
+          (#'command/find-handler ..type_of..) => handler)))
+
+    (fact
+      "should process command"
+      (command/process ..command..) => ..result..
+      (provided
+        (#'command/generate-events ..command..) => ..events..
+        (repository/produce ..events..) => ..result..)))
 
   (facts
     "invalid commands and handlers"
@@ -56,14 +65,14 @@
       (handle [this command] (list ..invalid..)))
 
     (fact
-      "should not process if not a 'Command'"
+      "should not handle if not a 'Command'"
       (let [handler (->TestCommandHandler)]
-        (command/process ..command..) => (throws AssertionError)))
+        (#'command/generate-events ..command..) => (throws AssertionError)))
 
     (fact
       "should not return if handler returns items that are not 'Event'"
       (let [command (->TestCommand)
             handler (->InvalidCommandHandler)]
-        (command/process command) => (throws AssertionError)
+        (#'command/generate-events command) => (throws AssertionError)
         (provided
           (#'command/find-handler ..type_of..) => handler)))))

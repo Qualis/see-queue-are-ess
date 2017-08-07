@@ -1,5 +1,6 @@
 (ns charlie-quebec-romeo-sierra.command
-  (:require [charlie-quebec-romeo-sierra.event :refer :all]))
+  (:require [charlie-quebec-romeo-sierra.event :refer :all]
+            [charlie-quebec-romeo-sierra.repository :as repository]))
 
 (def handlers (atom {}))
 
@@ -17,8 +18,12 @@
   [type_of]
   (get @handlers type_of))
 
-(defn process
+(defn- generate-events
   [command]
   {:pre  [(satisfies? Command command)]
    :post [(every? (fn [event] (satisfies? Event event)) %)]}
   (handle (find-handler (type-of command)) command))
+
+(defn process
+  [command]
+  (repository/produce (generate-events command)))
