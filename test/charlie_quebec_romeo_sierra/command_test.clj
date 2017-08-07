@@ -3,7 +3,7 @@
              :as command
              :refer :all]
             [midje.open-protocols :refer [defrecord-openly]])
-  (:use [midje.sweet :only [facts fact => provided]]))
+  (:use [midje.sweet :only [facts fact => provided throws]]))
 
 (facts
 
@@ -38,4 +38,10 @@
           handler (->TestCommandHandler)]
       (command/process command) => ..events..
       (provided
-        (#'command/find-handler ..type_of..) => handler))))
+        (#'command/find-handler ..type_of..) => handler)))
+
+  (fact
+    "should not process if not a 'Command'"
+    (let [events '()
+          handler (->TestCommandHandler)]
+      (command/process ..command..) => (throws AssertionError))))

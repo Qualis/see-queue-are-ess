@@ -18,4 +18,5 @@
 
 (defn process
   [command]
+  {:pre  [(satisfies? Command command)]}
   (handle (find-handler (type-of command)) command))
