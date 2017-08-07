@@ -1,4 +1,5 @@
-(ns charlie-quebec-romeo-sierra.command)
+(ns charlie-quebec-romeo-sierra.command
+  (:require [charlie-quebec-romeo-sierra.event :refer :all]))
 
 (def handlers (atom {}))
 
@@ -18,5 +19,6 @@
 
 (defn process
   [command]
-  {:pre  [(satisfies? Command command)]}
+  {:pre  [(satisfies? Command command)]
+   :post [(every? (fn [event] (satisfies? Event event)) %)]}
   (handle (find-handler (type-of command)) command))
