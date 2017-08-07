@@ -16,6 +16,10 @@
     (handle [this command] ..events..))
 
   (fact
+    "should have command type"
+    (type-of (->TestCommand)) => ..type_of..)
+
+  (fact
     "should register handler"
     (let [handler (->TestCommandHandler)]
       (#'command/register-handler ..type_of.. handler)

@@ -17,5 +17,5 @@
   (get @handlers type_of))
 
 (defn process
-  [^charlie_quebec_romeo_sierra.command.Command command]
+  [command]
   (handle (find-handler (type-of command)) command))
