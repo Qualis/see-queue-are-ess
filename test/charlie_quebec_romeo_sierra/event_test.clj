@@ -9,12 +9,7 @@
 
   (defrecord-openly TestEvent []
     event/Event
-    (revision [this] ..revision..)
     (data [this] ..data..))
-
-  (fact
-    "should have revision"
-    (revision (->TestEvent)) => ..revision..)
 
   (fact
     "should have data"
