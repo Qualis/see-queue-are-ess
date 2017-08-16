@@ -3,8 +3,7 @@
              :as command
              :refer :all]
             [charlie-quebec-romeo-sierra.event
-             :as event
-             :refer :all]
+             :as event]
             [charlie-quebec-romeo-sierra.repository
              :as repository]
             [midje.open-protocols :refer [defrecord-openly]])
