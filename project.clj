@@ -1,7 +1,10 @@
 (defproject charlie-quebec-romeo-sierra "0.0.1-SNAPSHOT"
   :description "A CQRS library for Clojure"
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [trptcolin/versioneer "0.2.0"]]
+                 [trptcolin/versioneer "0.2.0"]
+
+                 [danlentz/clj-uuid "0.1.7"]
+                 [spootnik/kinsky "0.1.16"]]
 
   :min-lein-version "2.0.0"
   :pedantic? :abort
@@ -13,6 +16,8 @@
               :plugins [[lein-midje "3.2.1"
                          :exclusions [org.clojure/tools.namespace]]]
               :dependencies [[org.clojure/tools.namespace "0.2.11"]
+                             [marick/suchwow "6.0.0"
+                              :exclusions [org.clojure/clojure org.clojure/clojurescript]]
                              [midje "1.8.3"]]}
              :quality [:dev
                        {:injections [(require 'midje.config)

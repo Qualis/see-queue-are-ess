@@ -27,7 +27,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     dev.cache.scope = :machine
 
     dev.vm.provider :virtualbox do |vb|
-      vb.memory = 1024
+      vb.memory = 2048
       vb.cpus = 2
     end
   end

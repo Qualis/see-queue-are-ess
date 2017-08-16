@@ -13,3 +13,15 @@
     - name: Add vagrant user to docker group
       user: name=vagrant groups=docker append=yes
       become: yes
+
+    - name: Copy upstart script for docker services
+      copy: src=docker-services.conf dest=/etc/init/ mode=0644
+      become: yes
+      notify:
+      - Restart docker-services
+
+  handlers:
+
+    - name: Restart docker-services
+      service: name=docker-services state=restarted
+      become: yes
