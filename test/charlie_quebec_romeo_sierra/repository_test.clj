@@ -47,12 +47,30 @@
       (#'repository/register-consumer ..type_of.. ..consumer..) => irrelevant))
 
   (fact
+    "should be valid"
+    (#'repository/valid? ..event..) => false)
+
+  (fact
     "should produce events"
-    (let [event (->TestEvent)]
-      (repository/produce [event]) => irrelevant
+    (let [event (->TestEvent)
+          events (list event)]
+      (repository/produce events) => irrelevant
       (provided
+        (#'repository/valid? events) => true
         (#'repository/producer) => ..producer..
         (client/send! ..producer..
                       ..type..
                       ..identifier..
-                      ..data..) => ..result..))))
+                      ..data..) => ..result..)))
+
+  (fact
+    "should not produce event if invalid"
+    (let [event (->TestEvent)
+          events (list event)]
+      (repository/produce events) => irrelevant
+      (provided
+        (#'repository/valid? events) => false
+        (client/send! ..producer..
+                      ..type..
+                      ..identifier..
+                      ..data..) => ..result.. :times 0))))

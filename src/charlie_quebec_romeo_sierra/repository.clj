@@ -29,10 +29,15 @@
 
 (def consumer (memoize create-consumer))
 
+(defn- valid?
+  [event]
+  false)
+
 (defn produce
   [events]
-  (doseq [event events]
-    (client/send! (producer)
-                  (.type-of event)
-                  (.aggregate-identifier event)
-                  (.data event))))
+  (when (valid? events)
+    (doseq [event events]
+      (client/send! (producer)
+                    (.type-of event)
+                    (.aggregate-identifier event)
+                    (.data event)))))
