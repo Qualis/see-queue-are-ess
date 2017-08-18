@@ -7,7 +7,7 @@
             [clj-uuid :as uuid]
             [clojure.core.async :refer [promise-chan promise-chan]]
             [midje.open-protocols :refer [defrecord-openly]])
-  (:use [midje.sweet :only [facts fact => provided irrelevant]]))
+  (:use [midje.sweet :only [facts fact => provided irrelevant defchecker]]))
 
 (facts
 
@@ -65,6 +65,11 @@
           aggregates {"coconuts" (->TestAggregate true)}]
       (#'repository/valid? aggregates events) => true))
 
+  (defchecker aggregates-checker
+    [actual]
+    (and (= (type actual) clojure.lang.Atom)
+         (= @actual {"coconuts" ..aggregate..})))
+
   (fact
     "should produce events"
     (let [event (->TestEvent)
@@ -73,7 +78,7 @@
       (repository/produce events) => irrelevant
       (provided
         (#'repository/load-aggregate "coconuts") => ..aggregate..
-        (#'repository/valid? aggregates events) => true
+        (#'repository/valid? aggregates-checker events) => true
         (#'repository/producer) => ..producer..
         (client/send! ..producer..
                       ..type..
@@ -88,7 +93,7 @@
       (repository/produce events) => irrelevant
       (provided
         (#'repository/load-aggregate "coconuts") => ..aggregate..
-        (#'repository/valid? aggregates events) => false
+        (#'repository/valid? aggregates-checker events) => false
         (client/send! ..producer..
                       ..type..
                       "coconuts"

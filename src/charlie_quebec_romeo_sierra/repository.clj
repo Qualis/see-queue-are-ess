@@ -38,11 +38,13 @@
 
 (defn produce
   [events]
-  (let [aggregates (into {}
-                         (map #(hash-map (.aggregate-identifier %)
-                                         (load-aggregate
-                                           (.aggregate-identifier %)))
-                              events))]
+  (let [aggregates (atom
+                     (into {}
+                           (map #(hash-map
+                                   (.aggregate-identifier %)
+                                   (load-aggregate
+                                     (.aggregate-identifier %)))
+                                events)))]
     (when (valid? aggregates events)
       (doseq [event events]
         (client/send! (producer)
