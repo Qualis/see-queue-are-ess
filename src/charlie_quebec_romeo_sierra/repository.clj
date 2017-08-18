@@ -33,14 +33,19 @@
   [identifier])
 
 (defn- valid?
-  [events]
-  (every? #(.is-valid (load-aggregate (.aggregate-identifier %)) %) events))
+  [aggregates events]
+  (every? #(.valid? (get aggregates (.aggregate-identifier %)) %) events))
 
 (defn produce
   [events]
-  (when (valid? events)
-    (doseq [event events]
-      (client/send! (producer)
-                    (.type-of event)
-                    (.aggregate-identifier event)
-                    (.data event)))))
+  (let [aggregates (into {}
+                         (map #(hash-map (.aggregate-identifier %)
+                                         (load-aggregate
+                                           (.aggregate-identifier %)))
+                              events))]
+    (when (valid? aggregates events)
+      (doseq [event events]
+        (client/send! (producer)
+                      (.type-of event)
+                      (.aggregate-identifier event)
+                      (.data event))))))

@@ -18,12 +18,13 @@
   (defrecord-openly TestEvent []
     event/Event
     (event/data [this] ..data..)
-    (event/aggregate-identifier [this] ..identifier..)
+    (event/aggregate-identifier [this] "coconuts")
     (event/type-of [this] ..type..))
 
   (defrecord-openly TestAggregate [valid]
     aggregate/Aggregate
-    (aggregate/is-valid [this event] valid))
+    (aggregate/identifier [this] "coconuts")
+    (aggregate/valid? [this event] valid))
 
   (fact
     "should create producer"
@@ -54,41 +55,41 @@
     "should be invalid"
     (let [event (->TestEvent)
           events (list event)
-          aggregate (->TestAggregate false)]
-      (#'repository/valid? events) => false
-      (provided
-        (#'repository/load-aggregate ..identifier..) => aggregate)))
+          aggregates {"coconuts" (->TestAggregate false)}]
+      (#'repository/valid? aggregates events) => false))
 
   (fact
     "should be valid"
     (let [event (->TestEvent)
           events (list event)
-          aggregate (->TestAggregate true)]
-      (#'repository/valid? events) => true
-      (provided
-        (#'repository/load-aggregate ..identifier..) => aggregate)))
+          aggregates {"coconuts" (->TestAggregate true)}]
+      (#'repository/valid? aggregates events) => true))
 
   (fact
     "should produce events"
     (let [event (->TestEvent)
-          events (list event)]
+          events (list event)
+          aggregates {"coconuts" ..aggregate..}]
       (repository/produce events) => irrelevant
       (provided
-        (#'repository/valid? events) => true
+        (#'repository/load-aggregate "coconuts") => ..aggregate..
+        (#'repository/valid? aggregates events) => true
         (#'repository/producer) => ..producer..
         (client/send! ..producer..
                       ..type..
-                      ..identifier..
+                      "coconuts"
                       ..data..) => ..result..)))
 
   (fact
     "should not produce event if invalid"
     (let [event (->TestEvent)
-          events (list event)]
+          events (list event)
+          aggregates {"coconuts" ..aggregate..}]
       (repository/produce events) => irrelevant
       (provided
-        (#'repository/valid? events) => false
+        (#'repository/load-aggregate "coconuts") => ..aggregate..
+        (#'repository/valid? aggregates events) => false
         (client/send! ..producer..
                       ..type..
-                      ..identifier..
+                      "coconuts"
                       ..data..) => ..result.. :times 0))))

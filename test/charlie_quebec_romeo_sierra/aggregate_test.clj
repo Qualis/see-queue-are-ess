@@ -12,7 +12,7 @@
     (data [this] ..data..)
     (identifier [this] ..identifier..)
     (type-of [this] ..type..)
-    (is-valid [this event] ..result..))
+    (valid? [this event] ..result..))
 
   (fact
     "should have data"
@@ -28,4 +28,4 @@
 
   (fact
     "should determine if event is valid for aggregate"
-    (is-valid (->TestAggregate) ..event..) => ..result..))
+    (valid? (->TestAggregate) ..event..) => ..result..))
