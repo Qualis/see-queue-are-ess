@@ -36,6 +36,9 @@
   [aggregates events]
   (every? #(.valid? (get aggregates (.aggregate-identifier %)) %) events))
 
+(defn- save
+  [aggregates])
+
 (defn produce
   [events]
   (let [aggregates (atom
@@ -46,6 +49,7 @@
                                      (.aggregate-identifier %)))
                                 events)))]
     (when (valid? aggregates events)
+      (save aggregates)
       (doseq [event events]
         (client/send! (producer)
                       (.type-of event)

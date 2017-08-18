@@ -79,6 +79,7 @@
       (provided
         (#'repository/load-aggregate "coconuts") => ..aggregate..
         (#'repository/valid? aggregates-checker events) => true
+        (#'repository/save aggregates-checker) => irrelevant
         (#'repository/producer) => ..producer..
         (client/send! ..producer..
                       ..type..
