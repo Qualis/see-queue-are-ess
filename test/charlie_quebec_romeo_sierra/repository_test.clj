@@ -1,7 +1,7 @@
 (ns charlie-quebec-romeo-sierra.repository-test
   (:require [charlie-quebec-romeo-sierra.repository :as repository]
-            [charlie-quebec-romeo-sierra.event
-             :as event :refer :all]
+            [charlie-quebec-romeo-sierra.event :as event]
+            [charlie-quebec-romeo-sierra.aggregate :as aggregate]
             [kinsky.client :as client]
             [kinsky.async :as async]
             [clj-uuid :as uuid]
@@ -17,9 +17,13 @@
 
   (defrecord-openly TestEvent []
     event/Event
-    (data [this] ..data..)
-    (aggregate-identifier [this] ..identifier..)
-    (type-of [this] ..type..))
+    (event/data [this] ..data..)
+    (event/aggregate-identifier [this] ..identifier..)
+    (event/type-of [this] ..type..))
+
+  (defrecord-openly TestAggregate [valid]
+    aggregate/Aggregate
+    (aggregate/is-valid [this event] valid))
 
   (fact
     "should create producer"
@@ -47,8 +51,22 @@
       (#'repository/register-consumer ..type_of.. ..consumer..) => irrelevant))
 
   (fact
+    "should be invalid"
+    (let [event (->TestEvent)
+          events (list event)
+          aggregate (->TestAggregate false)]
+      (#'repository/valid? events) => false
+      (provided
+        (#'repository/load-aggregate ..identifier..) => aggregate)))
+
+  (fact
     "should be valid"
-    (#'repository/valid? ..event..) => false)
+    (let [event (->TestEvent)
+          events (list event)
+          aggregate (->TestAggregate true)]
+      (#'repository/valid? events) => true
+      (provided
+        (#'repository/load-aggregate ..identifier..) => aggregate)))
 
   (fact
     "should produce events"

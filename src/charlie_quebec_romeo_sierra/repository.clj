@@ -29,9 +29,12 @@
 
 (def consumer (memoize create-consumer))
 
+(defn- load-aggregate
+  [identifier])
+
 (defn- valid?
-  [event]
-  false)
+  [events]
+  (every? #(.is-valid (load-aggregate (.aggregate-identifier %)) %) events))
 
 (defn produce
   [events]
