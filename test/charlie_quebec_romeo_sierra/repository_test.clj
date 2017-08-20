@@ -7,10 +7,17 @@
             [clj-uuid :as uuid]
             [clojure.core.async :refer [promise-chan promise-chan]]
             [midje.open-protocols :refer [defrecord-openly]])
-  (:use [midje.sweet :only [facts fact => provided irrelevant defchecker]]))
+  (:use [midje.sweet :only [facts
+                            fact
+                            =>
+                            provided
+                            irrelevant
+                            defchecker
+                            unfinished]]))
+
+(unfinished processor)
 
 (facts
-
   (require '[charlie-quebec-romeo-sierra.repository :as repository
              :refer :all]
            :reload)
@@ -24,7 +31,8 @@
   (defrecord-openly TestAggregate [valid]
     aggregate/Aggregate
     (aggregate/identifier [this] "coconuts")
-    (aggregate/valid? [this event] valid))
+    (aggregate/valid? [this event] valid)
+    (aggregate/process [this event] (processor this event)))
 
   (fact
     "should create producer"
@@ -55,15 +63,23 @@
     "should be invalid"
     (let [event (->TestEvent)
           events (list event)
-          aggregates {"coconuts" (->TestAggregate false)}]
-      (#'repository/valid? aggregates events) => false))
+          initial_aggregate (->TestAggregate true)
+          aggregate (->TestAggregate false)
+          aggregates (atom {"coconuts" initial_aggregate})]
+      (#'repository/valid? aggregates events) => false
+      (provided
+        (processor initial_aggregate event) => aggregate)))
 
   (fact
     "should be valid"
     (let [event (->TestEvent)
           events (list event)
-          aggregates {"coconuts" (->TestAggregate true)}]
-      (#'repository/valid? aggregates events) => true))
+          initial_aggregate (->TestAggregate false)
+          aggregate (->TestAggregate true)
+          aggregates (atom {"coconuts" initial_aggregate})]
+      (#'repository/valid? aggregates events) => true
+      (provided
+        (processor initial_aggregate event) => aggregate)))
 
   (defchecker aggregates-checker
     [actual]
@@ -79,7 +95,7 @@
       (provided
         (#'repository/load-aggregate "coconuts") => ..aggregate..
         (#'repository/valid? aggregates-checker events) => true
-        (#'repository/save aggregates-checker) => irrelevant
+        (#'repository/save events) => irrelevant
         (#'repository/producer) => ..producer..
         (client/send! ..producer..
                       ..type..

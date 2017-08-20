@@ -5,4 +5,5 @@
   (data [this])
   (identifier [this])
   (type-of [this])
-  (valid? [this event]))
+  (valid? [this event])
+  (process [this event]))

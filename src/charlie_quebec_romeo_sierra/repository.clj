@@ -34,10 +34,16 @@
 
 (defn- valid?
   [aggregates events]
-  (every? #(.valid? (get aggregates (.aggregate-identifier %)) %) events))
+  (doseq [event events]
+    (swap! aggregates
+           update-in
+           [(.aggregate-identifier event)]
+           #(.process % event)))
+  (every? #(.valid? (get @aggregates (.aggregate-identifier %)) %)
+          events))
 
 (defn- save
-  [aggregates])
+  [events])
 
 (defn produce
   [events]
@@ -49,7 +55,7 @@
                                      (.aggregate-identifier %)))
                                 events)))]
     (when (valid? aggregates events)
-      (save aggregates)
+      (save events)
       (doseq [event events]
         (client/send! (producer)
                       (.type-of event)

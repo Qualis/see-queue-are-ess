@@ -12,7 +12,8 @@
     (data [this] ..data..)
     (identifier [this] ..identifier..)
     (type-of [this] ..type..)
-    (valid? [this event] ..result..))
+    (valid? [this event] ..result..)
+    (process [this event] ..result..))
 
   (fact
     "should have data"
@@ -28,4 +29,8 @@
 
   (fact
     "should determine if event is valid for aggregate"
-    (valid? (->TestAggregate) ..event..) => ..result..))
+    (valid? (->TestAggregate) ..event..) => ..result..)
+
+  (fact
+    "should apply event to aggregate"
+    (process (->TestAggregate) ..event..) => ..result..))
