@@ -12,13 +12,14 @@
   []
   DATABASE_NAME)
 
-(defn- persist-event
-  [database event]
-  (mongo.collection/insert-and-return
+(defn- persist-events
+  [database events]
+  (mongo.collection/insert-batch
     database
-    (.type-of event)
-    {:data (.data event)
-     :aggregate_identifier (.aggregate-identifier event)}))
+    "events"
+    (map #(hash-map :data (.data %)
+                    :aggregate_identifier (.aggregate-identifier %))
+         events)))
 
 (defn load-aggregate
   [identifier]
@@ -31,6 +32,5 @@
   [events]
   (let [connection (connection)
         database (mongo/get-db connection (database-name))]
-    (doseq [event events]
-      (persist-event database event))
+    (persist-events database events)
     (mongo/disconnect connection)))

@@ -25,22 +25,23 @@
 
   (fact
     "should persist event"
-    (#'repository/persist-event ..database.. (->TestEvent)) => ..result..
+    (#'repository/persist-events ..database..
+                                 (list (->TestEvent))) => ..result..
     (provided
-      (mongo.collection/insert-and-return
+      (mongo.collection/insert-batch
         ..database..
-        ..type..
-        {:aggregate_identifier "coconuts"
-         :data ..data..}) => ..result..))
+        "events"
+        [{:aggregate_identifier "coconuts"
+          :data ..data..}]) => ..result..))
 
   (fact
     "should save"
-    (repository/save (list ..event..)) => irrelevant
+    (repository/save ..events..) => irrelevant
     (provided
       (#'repository/connection) => ..connection..
       (#'repository/database-name) => ..database_name..
       (mongo/get-db ..connection.. ..database_name..) => ..database..
-      (#'repository/persist-event ..database.. ..event..) => irrelevant
+      (#'repository/persist-events ..database.. ..events..) => irrelevant
       (mongo/disconnect ..connection..) => irrelevant))
 
   (fact
