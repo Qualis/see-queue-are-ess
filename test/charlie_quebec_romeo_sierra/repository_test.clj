@@ -21,7 +21,7 @@
 
   (fact
     "should get database name"
-    (#'repository/database-name) => "event")
+    (#'repository/database-name) => "cqrs")
 
   (fact
     "should persist event"
@@ -41,4 +41,16 @@
       (#'repository/database-name) => ..database_name..
       (mongo/get-db ..connection.. ..database_name..) => ..database..
       (#'repository/persist-event ..database.. ..event..) => irrelevant
-      (mongo/disconnect ..connection..) => irrelevant)))
+      (mongo/disconnect ..connection..) => irrelevant))
+
+  (fact
+    "should load aggregate events"
+    (repository/load-aggregate ..identifier..) => ..result..
+    (provided
+      (#'repository/connection) => ..connection..
+      (#'repository/database-name) => ..database_name..
+      (mongo/get-db ..connection.. ..database_name..) => ..database..
+      (mongo.collection/find-maps
+        ..database..
+        "events"
+        {:aggregate_identifier ..identifier..}) => ..result..)))

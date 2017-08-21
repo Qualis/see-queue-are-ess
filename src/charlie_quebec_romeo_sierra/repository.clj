@@ -2,7 +2,7 @@
   (:require [monger.core :as mongo]
             [monger.collection :as mongo.collection]))
 
-(def ^:const DATABASE_NAME "event")
+(def ^:const DATABASE_NAME "cqrs")
 
 (defn connection
   []
@@ -21,7 +21,11 @@
      :aggregate_identifier (.aggregate-identifier event)}))
 
 (defn load-aggregate
-  [identifier])
+  [identifier]
+  (let [database (mongo/get-db (connection) (database-name))]
+    (mongo.collection/find-maps database
+                                "events"
+                                {:aggregate_identifier identifier})))
 
 (defn save
   [events]
