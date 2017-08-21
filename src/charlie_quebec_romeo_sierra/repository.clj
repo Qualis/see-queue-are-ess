@@ -17,9 +17,8 @@
   (mongo.collection/insert-and-return
     database
     (.type-of event)
-    (assoc (.data event)
-           :aggregate_identifier
-           (.aggregate-identifier event))))
+    {:data (.data event)
+     :aggregate_identifier (.aggregate-identifier event)}))
 
 (defn load-aggregate
   [identifier])

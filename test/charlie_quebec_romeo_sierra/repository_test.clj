@@ -10,7 +10,7 @@
 
   (defrecord-openly TestEvent []
     event/Event
-    (event/data [this] {:bob ..data..})
+    (event/data [this] ..data..)
     (event/aggregate-identifier [this] "coconuts")
     (event/type-of [this] ..type..))
   (fact
@@ -31,7 +31,7 @@
         ..database..
         ..type..
         {:aggregate_identifier "coconuts"
-         :bob ..data..}) => ..result..))
+         :data ..data..}) => ..result..))
 
   (fact
     "should save"
