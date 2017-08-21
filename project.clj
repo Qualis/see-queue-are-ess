@@ -4,7 +4,8 @@
                  [trptcolin/versioneer "0.2.0"]
 
                  [danlentz/clj-uuid "0.1.7"]
-                 [spootnik/kinsky "0.1.16"]]
+                 [spootnik/kinsky "0.1.16"]
+                 [com.novemberain/monger "3.1.0"]]
 
   :min-lein-version "2.0.0"
   :pedantic? :abort
