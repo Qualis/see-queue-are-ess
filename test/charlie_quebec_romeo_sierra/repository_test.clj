@@ -10,7 +10,7 @@
 
   (defrecord-openly TestEvent []
     event/Event
-    (event/data [this] ..data..)
+    (event/data [this] {:bob ..data..})
     (event/aggregate-identifier [this] "coconuts")
     (event/type-of [this] ..type..))
   (fact
@@ -30,7 +30,8 @@
       (mongo.collection/insert-and-return
         ..database..
         ..type..
-        ..data..) => ..result..))
+        {:aggregate_identifier "coconuts"
+         :bob ..data..}) => ..result..))
 
   (fact
     "should save"
