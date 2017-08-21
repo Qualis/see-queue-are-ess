@@ -4,8 +4,8 @@
              :refer :all]
             [charlie-quebec-romeo-sierra.event
              :as event]
-            [charlie-quebec-romeo-sierra.repository
-             :as repository]
+            [charlie-quebec-romeo-sierra.producer
+             :as producer]
             [midje.open-protocols :refer [defrecord-openly]])
   (:use [midje.sweet :only [facts fact => provided throws]]))
 
@@ -54,7 +54,7 @@
       (command/process ..command..) => ..result..
       (provided
         (#'command/generate-events ..command..) => ..events..
-        (repository/produce ..events..) => ..result..)))
+        (producer/produce ..events..) => ..result..)))
 
   (facts
     "invalid commands and handlers"

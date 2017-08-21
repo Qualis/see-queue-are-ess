@@ -1,6 +1,6 @@
 (ns charlie-quebec-romeo-sierra.command
   (:require [charlie-quebec-romeo-sierra.event :as event]
-            [charlie-quebec-romeo-sierra.repository :as repository]))
+            [charlie-quebec-romeo-sierra.producer :as producer]))
 
 (def handlers (atom {}))
 
@@ -26,4 +26,4 @@
 
 (defn process
   [command]
-  (repository/produce (generate-events command)))
+  (producer/produce (generate-events command)))
