@@ -10,10 +10,6 @@
 (defprotocol CommandHandler
   (handle [this command]))
 
-(defn- register-handler
-  [type_of handler]
-  (swap! handlers assoc type_of handler))
-
 (defn- find-handler
   [type_of]
   (get @handlers type_of))
@@ -23,6 +19,10 @@
   {:pre  [(satisfies? Command command)]
    :post [(every? (fn [event] (satisfies? event/Event event)) %)]}
   (handle (find-handler (type-of command)) command))
+
+(defn register-handler
+  [type_of handler]
+  (swap! handlers assoc type_of handler))
 
 (defn process
   [command]

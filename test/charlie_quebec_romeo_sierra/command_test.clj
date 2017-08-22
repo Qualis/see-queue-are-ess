@@ -32,7 +32,7 @@
     (fact
       "should register handler"
       (let [handler (->TestCommandHandler)]
-        (#'command/register-handler ..type_of.. handler)
+        (command/register-handler ..type_of.. handler)
         @command/handlers => {..type_of.. handler}))
 
     (fact
