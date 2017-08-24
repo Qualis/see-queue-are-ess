@@ -34,14 +34,16 @@
 
   (fact
     "should persist event"
-    (#'repository/persist-events ..database..
-                                 (list (->TestEvent))) => ..result..
-    (provided
-      (mongo.collection/insert-batch
-        ..database..
-        "events"
-        [{:aggregate_identifier ..identifier..
-          :data ..data..}]) => ..result..))
+    (let [event (->TestEvent)
+          serialized_event (pr-str event)]
+      (#'repository/persist-events ..database..
+                                   (list event)) => ..result..
+      (provided
+        (mongo.collection/insert-batch
+          ..database..
+          "events"
+          [{:aggregate_identifier ..identifier..
+            :event serialized_event}]) => ..result..)))
 
   (fact
     "should save"
@@ -56,7 +58,8 @@
   (fact
     "should load aggregate events"
     (let [test_aggregate (->TestAggregate)
-          events (list ..event..)]
+          event (->TestEvent)
+          events (list {:event (pr-str event)})]
       (repository/load-aggregate ..aggregate_type..
                                  ..identifier..) => test_aggregate
       (provided
@@ -69,4 +72,4 @@
           {:aggregate_identifier ..identifier..}) => events
         (aggregate/get-aggregate ..aggregate_type..
                                  ..identifier..) => test_aggregate
-        (processor ..event..) => irrelevant))))
+        (processor event) => irrelevant))))

@@ -18,8 +18,8 @@
   (mongo.collection/insert-batch
     database
     "events"
-    (map #(hash-map :data (.data %)
-                    :aggregate_identifier (.aggregate-identifier %))
+    (map #(hash-map :aggregate_identifier (.aggregate-identifier %)
+                    :event (pr-str %))
          events)))
 
 (defn load-aggregate
@@ -31,7 +31,7 @@
                     database
                     "events"
                     {:aggregate_identifier identifier})]
-      (.process aggregate event))
+      (.process aggregate (read-string (:event event))))
     aggregate))
 
 (defn save
