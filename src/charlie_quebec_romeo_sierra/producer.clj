@@ -27,6 +27,7 @@
                            (map #(hash-map
                                    (.aggregate-identifier %)
                                    (repository/load-aggregate
+                                     (.type-of %)
                                      (.aggregate-identifier %)))
                                 events)))]
     (when (valid? aggregates events)

@@ -1,5 +1,6 @@
 (ns charlie-quebec-romeo-sierra.repository
-  (:require [monger.core :as mongo]
+  (:require [charlie-quebec-romeo-sierra.aggregate :as aggregate]
+            [monger.core :as mongo]
             [monger.collection :as mongo.collection]))
 
 (def ^:const DATABASE_NAME "cqrs")
@@ -22,11 +23,16 @@
          events)))
 
 (defn load-aggregate
-  [identifier]
-  (let [database (mongo/get-db (connection) (database-name))]
-    (mongo.collection/find-maps database
-                                "events"
-                                {:aggregate_identifier identifier})))
+  [type_of identifier]
+  (let [database (mongo/get-db (connection) (database-name))
+        aggregate (aggregate/get-aggregate type_of
+                                           identifier)]
+    (doseq [event (mongo.collection/find-maps
+                    database
+                    "events"
+                    {:aggregate_identifier identifier})]
+      (.process aggregate event))
+    aggregate))
 
 (defn save
   [events]

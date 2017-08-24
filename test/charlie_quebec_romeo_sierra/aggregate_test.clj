@@ -3,7 +3,9 @@
              :as aggregate
              :refer :all]
             [midje.open-protocols :refer [defrecord-openly]])
-  (:use [midje.sweet :only [facts fact => provided]]))
+  (:use [midje.sweet :only [facts fact => provided unfinished]]))
+
+(unfinished factory)
 
 (facts
 
@@ -14,6 +16,10 @@
     (type-of [this] ..type..)
     (valid? [this event] ..result..)
     (process [this event] ..result..))
+
+  (defrecord-openly TestAggregateFactory []
+    aggregate/AggregateFactory
+    (create [this type_of identifier] (->TestAggregate)))
 
   (fact
     "should have data"
@@ -33,4 +39,17 @@
 
   (fact
     "should apply event to aggregate"
-    (process (->TestAggregate) ..event..) => ..result..))
+    (process (->TestAggregate) ..event..) => ..result..)
+
+  (fact
+    "should find aggregate"
+    (with-redefs [aggregate/aggregates
+                  (atom {..type_of.. (->TestAggregateFactory)})]
+      (aggregate/get-aggregate ..type_of..
+                               ..identifier..) => (->TestAggregate)))
+
+  (fact
+    "should register aggregate"
+    (let [aggregate_constructor ->TestAggregate]
+      (aggregate/register-aggregate ..type_of.. aggregate_constructor)
+      @aggregate/aggregates => {..type_of.. aggregate_constructor})))

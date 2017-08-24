@@ -4,6 +4,7 @@
 
 (defprotocol Event
   (data [this])
+  (aggregate-type [this])
   (aggregate-identifier [this])
   (type-of [this]))
 

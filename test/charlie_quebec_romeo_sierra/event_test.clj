@@ -11,6 +11,7 @@
     event/Event
     (data [this] ..data..)
     (aggregate-identifier [this] ..identifier..)
+    (aggregate-type [this] ..aggregate_type..)
     (type-of [this] ..type..))
 
   (defrecord-openly TestEventHandler []
@@ -24,6 +25,10 @@
   (fact
     "should have aggregate identifier"
     (aggregate-identifier (->TestEvent)) => ..identifier..)
+
+  (fact
+    "should have aggregate type"
+    (aggregate-type (->TestEvent)) => ..aggregate_type..)
 
   (fact
     "should have type"

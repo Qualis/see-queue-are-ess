@@ -23,12 +23,12 @@
   (defrecord-openly TestEvent []
     event/Event
     (event/data [this] ..data..)
-    (event/aggregate-identifier [this] "coconuts")
+    (event/aggregate-identifier [this] ..identifier..)
     (event/type-of [this] ..type..))
 
   (defrecord-openly TestAggregate [valid]
     aggregate/Aggregate
-    (aggregate/identifier [this] "coconuts")
+    (aggregate/identifier [this] ..identifier..)
     (aggregate/valid? [this event] valid)
     (aggregate/process [this event] (processor this event)))
 
@@ -46,7 +46,7 @@
           events (list event)
           initial_aggregate (->TestAggregate true)
           aggregate (->TestAggregate false)
-          aggregates (atom {"coconuts" initial_aggregate})]
+          aggregates (atom {..identifier.. initial_aggregate})]
       (#'producer/valid? aggregates events) => false
       (provided
         (processor initial_aggregate event) => aggregate)))
@@ -57,7 +57,7 @@
           events (list event)
           initial_aggregate (->TestAggregate false)
           aggregate (->TestAggregate true)
-          aggregates (atom {"coconuts" initial_aggregate})]
+          aggregates (atom {..identifier.. initial_aggregate})]
       (#'producer/valid? aggregates events) => true
       (provided
         (processor initial_aggregate event) => aggregate)))
@@ -65,34 +65,36 @@
   (defchecker aggregates-checker
     [actual]
     (and (= (type actual) clojure.lang.Atom)
-         (= @actual {"coconuts" ..aggregate..})))
+         (= @actual {..identifier.. ..aggregate..})))
 
   (fact
     "should produce events"
     (let [event (->TestEvent)
           events (list event)
-          aggregates {"coconuts" ..aggregate..}]
+          aggregates {..identifier.. ..aggregate..}]
       (producer/produce events) => irrelevant
       (provided
-        (repository/load-aggregate "coconuts") => ..aggregate..
+        (repository/load-aggregate ..type..
+                                   ..identifier..) => ..aggregate..
         (#'producer/valid? aggregates-checker events) => true
         (repository/save events) => irrelevant
         (#'producer/producer) => ..producer..
         (client/send! ..producer..
                       ..type..
-                      "coconuts"
+                      ..identifier..
                       ..data..) => ..result..)))
 
   (fact
     "should not produce event if invalid"
     (let [event (->TestEvent)
           events (list event)
-          aggregates {"coconuts" ..aggregate..}]
+          aggregates {..identifier.. ..aggregate..}]
       (producer/produce events) => irrelevant
       (provided
-        (repository/load-aggregate "coconuts") => ..aggregate..
+        (repository/load-aggregate ..type..
+                                   ..identifier..) => ..aggregate..
         (#'producer/valid? aggregates-checker events) => false
         (client/send! ..producer..
                       ..type..
-                      "coconuts"
+                      ..identifier..
                       ..data..) => ..result.. :times 0))))
