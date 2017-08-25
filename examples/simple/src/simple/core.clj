@@ -1,7 +1,8 @@
 (ns simple.core
   (:require [charlie-quebec-romeo-sierra.command :as command]
             [charlie-quebec-romeo-sierra.event :as event]
-            [charlie-quebec-romeo-sierra.aggregate :as aggregate]))
+            [charlie-quebec-romeo-sierra.aggregate :as aggregate]
+            [charlie-quebec-romeo-sierra.consumer :as consumer]))
 
 (def ^:const TYPE_OF "simple")
 
@@ -31,8 +32,6 @@
                                                     identifier
                                                     (atom {}))))
 
-(aggregate/register-aggregate "simple" (->SimpleAggregateFactory))
-
 (defn- event
   [type_of]
   (list (->SimpleEvent type_of
@@ -51,10 +50,6 @@
 (defn- command
   []
   (->SimpleCommand))
-
-(def command_handler (->SimpleCommandHandler))
-
-(command/register-handler TYPE_OF command_handler)
 
 (defn create
   [command]

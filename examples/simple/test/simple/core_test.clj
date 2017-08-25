@@ -1,7 +1,11 @@
 (ns simple.core-test
   (:require [simple.core :as core :refer [->SimpleCommand
-                                          ->SimpleEvent]]
-            [charlie-quebec-romeo-sierra.command :as command])
+                                          ->SimpleCommandHandler
+                                          ->SimpleEvent
+                                          ->SimpleAggregateFactory]]
+            [charlie-quebec-romeo-sierra.command :as command]
+            [charlie-quebec-romeo-sierra.aggregate :as aggregate]
+            [charlie-quebec-romeo-sierra.consumer :as consumer])
   (:use [midje.sweet :only [fact => provided]]))
 
 (fact
@@ -14,7 +18,7 @@
 
 (fact
   "should create expected events"
-  (.handle core/command_handler
+  (.handle (->SimpleCommandHandler)
            (->SimpleCommand)) => (list (->SimpleEvent
                                          "simple"
                                          "34fa3c0c-8786-11e7-bb31-be2e44b06b34"
@@ -25,6 +29,16 @@
   (core/create ..command..) => ..result..
   (provided
     (command/process ..command..) => ..result..))
+
+(aggregate/register-aggregate "simple" (->SimpleAggregateFactory))
+
+(command/register-handler core/TYPE_OF (->SimpleCommandHandler))
+
+(defn handle-event
+  [event]
+  (clojure.pprint/pprint event))
+
+(consumer/consumer "simple" handle-event)
 
 (fact
   "should process command"
