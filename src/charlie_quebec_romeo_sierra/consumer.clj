@@ -14,16 +14,14 @@
   [type_of consumer handler]
   (let [[output control] consumer
         topic type_of]
-    (go-loop []
-             (when-let [record (<! output)]
-               (handler record)
-               (recur)))
-    (put! control {:op :partitions-for :topic topic})
+    (go-loop
+      []
+      (when-let [record (<! output)]
+        (when (= (:type record) :record)
+          (handler record))
+        (recur)))
     (put! control {:op :subscribe :topic topic})
-    (put! control {:op :commit})
-    (put! control {:op :pause :topic-partitions [{:topic topic :partition 0}]})
-    (put! control {:op :resume :topic-partitions [{:topic topic :partition 0}]})
-    (put! control {:op :stop})))
+    (put! control {:op :commit})))
 
 (defn create-consumer
   [type_of handler]
