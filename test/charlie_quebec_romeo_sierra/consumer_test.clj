@@ -9,7 +9,10 @@
                             fact
                             =>
                             provided
-                            irrelevant]]))
+                            irrelevant
+                            unfinished]]))
+
+(unfinished handler)
 
 (facts
   (require '[charlie-quebec-romeo-sierra.consumer :as consumer
@@ -22,8 +25,13 @@
     @consumer/consumers => {..type_of.. ..consumer..})
 
   (fact
+    "should return registered consumer"
+    (#'consumer/register-consumer ..type_of.. ..consumer..) => ..consumer..)
+
+  (fact
     "should create consumer"
-    (#'consumer/create-consumer ..type_of..) => irrelevant
+    (#'consumer/create-consumer ..type_of..
+                                ..handler..) => irrelevant
     (provided
       (client/keyword-deserializer) => ..keyword_deserializer..
       (client/edn-deserializer) => ..value_deserializer..
@@ -31,4 +39,8 @@
                        :group.id ..type_of..}
                       ..keyword_deserializer..
                       ..value_deserializer..) => ..consumer..
-      (#'consumer/register-consumer ..type_of.. ..consumer..) => irrelevant)))
+      (#'consumer/register-consumer ..type_of..
+                                    ..consumer..) => ..consumer..
+      (#'consumer/listen ..type_of..
+                         ..consumer..
+                         ..handler..) => irrelevant)))
