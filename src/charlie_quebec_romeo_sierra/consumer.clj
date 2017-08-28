@@ -5,6 +5,18 @@
 
 (def consumers (atom {}))
 
+(defprotocol ConsumerControl
+  (unsubscribe [this])
+  (stop [this]))
+
+(defrecord ConsumerController
+  [control]
+  ConsumerControl
+  (unsubscribe [this]
+    (put! control {:op :unsubscribe}))
+  (stop [this]
+    (put! control {:op :stop})))
+
 (defn- register-consumer
   [type_of consumer]
   (swap! consumers assoc type_of consumer)

@@ -1,10 +1,12 @@
 (ns charlie-quebec-romeo-sierra.consumer-test
-  (:require [charlie-quebec-romeo-sierra.consumer :as consumer]
+  (:require [charlie-quebec-romeo-sierra.consumer :as consumer
+             :refer [->ConsumerController]]
             [charlie-quebec-romeo-sierra.event :as event]
             [charlie-quebec-romeo-sierra.aggregate :as aggregate]
             [kinsky.client :as client]
             [kinsky.async :as async]
-            [clj-uuid :as uuid])
+            [clj-uuid :as uuid]
+            [clojure.core.async :refer [chan put!]])
   (:use [midje.sweet :only [facts
                             fact
                             =>
@@ -16,8 +18,27 @@
 
 (facts
   (require '[charlie-quebec-romeo-sierra.consumer :as consumer
-             :refer :all]
+             :refer [->ConsumerController]]
            :reload)
+
+  (facts
+    "Consumer"
+
+    (fact
+      "should unsubscribe"
+      (let [control (chan)
+            consumer (->ConsumerController control)]
+        (.unsubscribe consumer) => irrelevant
+        (provided
+          (put! control {:op :unsubscribe}) => irrelevant)))
+
+    (fact
+      "should stop"
+      (let [control (chan)
+            consumer (->ConsumerController control)]
+        (.stop consumer) => irrelevant
+        (provided
+          (put! control {:op :stop}) => irrelevant))))
 
   (fact
     "should register consumer"
