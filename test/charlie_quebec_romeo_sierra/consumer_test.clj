@@ -58,10 +58,10 @@
           (put! control {:op :stop}) => irrelevant)))
 
     (fact
-      "should return record channel"
-        (.record-channel (->KafkaConsumerController
+      "should return output channel"
+        (.output-channel (->KafkaConsumerController
                            ..control..
-                           ..record_channel..)) => ..record_channel..))
+                           ..output..)) => ..output..))
 
   (fact
     "should register consumer"

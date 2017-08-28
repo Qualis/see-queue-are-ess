@@ -6,17 +6,17 @@
 (def consumers (atom {}))
 
 (defprotocol ConsumerController
-  (record-channel [this])
+  (output-channel [this])
   (subscribe [this topic])
   (unsubscribe [this])
   (commit [this])
   (stop [this]))
 
 (defrecord KafkaConsumerController
-  [control record_channel]
+  [control output]
   ConsumerController
-  (record-channel [this]
-    record_channel)
+  (output-channel [this]
+    output)
   (subscribe [this topic]
     (put! control {:op :subscribe :topic topic}))
   (unsubscribe [this]
