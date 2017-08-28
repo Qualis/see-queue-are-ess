@@ -6,12 +6,15 @@
 (def consumers (atom {}))
 
 (defprotocol ConsumerControl
+  (record-channel [this])
   (unsubscribe [this])
   (stop [this]))
 
 (defrecord ConsumerController
-  [control]
+  [control record_channel]
   ConsumerControl
+  (record-channel [this]
+    record_channel)
   (unsubscribe [this]
     (put! control {:op :unsubscribe}))
   (stop [this]

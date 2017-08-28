@@ -12,6 +12,7 @@
                             =>
                             provided
                             irrelevant
+                            anything
                             unfinished]]))
 
 (unfinished handler)
@@ -27,7 +28,7 @@
     (fact
       "should unsubscribe"
       (let [control (chan)
-            consumer (->ConsumerController control)]
+            consumer (->ConsumerController control anything)]
         (.unsubscribe consumer) => irrelevant
         (provided
           (put! control {:op :unsubscribe}) => irrelevant)))
@@ -35,10 +36,16 @@
     (fact
       "should stop"
       (let [control (chan)
-            consumer (->ConsumerController control)]
+            consumer (->ConsumerController control anything)]
         (.stop consumer) => irrelevant
         (provided
-          (put! control {:op :stop}) => irrelevant))))
+          (put! control {:op :stop}) => irrelevant)))
+
+    (fact
+      "should return record channel"
+        (.record-channel (->ConsumerController
+                           ..control..
+                           ..record_channel..)) => ..record_channel..))
 
   (fact
     "should register consumer"
