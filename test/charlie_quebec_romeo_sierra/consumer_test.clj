@@ -28,7 +28,7 @@
     (fact
       "should subscribe"
       (let [control (chan)
-            consumer (->KafkaConsumerController control anything)]
+            consumer (->KafkaConsumerController anything control)]
         (.subscribe consumer ..topic..) => irrelevant
         (provided
           (put! control {:op :subscribe :topic ..topic..}) => irrelevant)))
@@ -36,7 +36,7 @@
     (fact
       "should unsubscribe"
       (let [control (chan)
-            consumer (->KafkaConsumerController control anything)]
+            consumer (->KafkaConsumerController anything control)]
         (.unsubscribe consumer) => irrelevant
         (provided
           (put! control {:op :unsubscribe}) => irrelevant)))
@@ -44,7 +44,7 @@
     (fact
       "should commit"
       (let [control (chan)
-            consumer (->KafkaConsumerController control anything)]
+            consumer (->KafkaConsumerController anything control)]
         (.commit consumer) => irrelevant
         (provided
           (put! control {:op :commit}) => irrelevant)))
@@ -52,7 +52,7 @@
     (fact
       "should stop"
       (let [control (chan)
-            consumer (->KafkaConsumerController control anything)]
+            consumer (->KafkaConsumerController anything control)]
         (.stop consumer) => irrelevant
         (provided
           (put! control {:op :stop}) => irrelevant)))
@@ -60,8 +60,8 @@
     (fact
       "should return output channel"
         (.output-channel (->KafkaConsumerController
-                           ..control..
-                           ..output..)) => ..output..))
+                           ..output..
+                           anything)) => ..output..))
 
   (fact
     "should register consumer"
@@ -74,17 +74,19 @@
 
   (fact
     "should create consumer"
-    (#'consumer/create-consumer ..type_of..
-                                ..handler..) => irrelevant
-    (provided
-      (client/keyword-deserializer) => ..keyword_deserializer..
-      (client/edn-deserializer) => ..value_deserializer..
-      (async/consumer {:bootstrap.servers "localhost:9092"
-                       :group.id ..type_of..}
-                      ..keyword_deserializer..
-                      ..value_deserializer..) => ..consumer..
-      (#'consumer/register-consumer ..type_of..
-                                    ..consumer..) => ..consumer..
-      (#'consumer/listen ..type_of..
-                         ..consumer..
-                         ..handler..) => irrelevant)))
+      (#'consumer/create-consumer ..type_of..
+                                  ..handler..) => ..consumer..
+      (provided
+        (client/keyword-deserializer) => ..keyword_deserializer..
+        (client/edn-deserializer) => ..value_deserializer..
+        (async/consumer {:bootstrap.servers "localhost:9092"
+                         :group.id ..type_of..}
+                        ..keyword_deserializer..
+                        ..value_deserializer..) => [..output..
+                                                    ..control..]
+        (->KafkaConsumerController ..output.. ..control..) => ..consumer..
+        (#'consumer/register-consumer ..type_of..
+                                      ..consumer..) => ..consumer..
+        (#'consumer/listen ..type_of..
+                           ..consumer..
+                           ..handler..) => irrelevant)))

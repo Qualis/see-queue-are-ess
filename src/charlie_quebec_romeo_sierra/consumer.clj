@@ -13,7 +13,7 @@
   (stop [this]))
 
 (defrecord KafkaConsumerController
-  [control output]
+  [output control]
   ConsumerController
   (output-channel [this]
     output)
@@ -33,26 +33,30 @@
 
 (defn- listen
   [type_of consumer handler]
-  (let [[output control] consumer
-        topic type_of]
-    (go-loop
-      []
-      (when-let [record (<! output)]
-        (when (= (:type record) :record)
-          (handler record))
-        (recur)))
-    (put! control {:op :subscribe :topic topic})
-    (put! control {:op :commit})))
+  (go-loop
+    []
+    (when-let [record (<! (.output-channel consumer))]
+      (when (= (:type record) :record)
+        (handler record))
+      (recur)))
+  (.subscribe consumer type_of)
+  (.commit consumer))
 
 (defn create-consumer
   [type_of handler]
-  (listen type_of
-          (register-consumer type_of
-                             (async/consumer
-                               {:bootstrap.servers "localhost:9092"
-                                :group.id type_of}
-                               (client/keyword-deserializer)
-                               (client/edn-deserializer)))
-          handler))
+  (let [[output control] (async/consumer
+                           {:bootstrap.servers "localhost:9092"
+                            :group.id type_of}
+                           (client/keyword-deserializer)
+                           (client/edn-deserializer))
+        consumer (register-consumer
+                   type_of
+                   (->KafkaConsumerController
+                     output
+                     control))]
+    (listen type_of
+            consumer
+            handler)
+    consumer))
 
 (def consumer (memoize create-consumer))
