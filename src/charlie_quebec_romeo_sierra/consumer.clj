@@ -42,7 +42,7 @@
   (.subscribe consumer type_of)
   (.commit consumer))
 
-(defn create-consumer
+(defn consumer
   [type_of handler]
   (let [[output control] (async/consumer
                            {:bootstrap.servers "localhost:9092"
@@ -58,5 +58,3 @@
             consumer
             handler)
     consumer))
-
-(def consumer (memoize create-consumer))

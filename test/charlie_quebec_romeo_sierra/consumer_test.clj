@@ -59,9 +59,9 @@
 
     (fact
       "should return output channel"
-        (.output-channel (->KafkaConsumerController
-                           ..output..
-                           anything)) => ..output..))
+      (.output-channel (->KafkaConsumerController
+                         ..output..
+                         anything)) => ..output..))
 
   (fact
     "should register consumer"
@@ -74,19 +74,19 @@
 
   (fact
     "should create consumer"
-      (#'consumer/create-consumer ..type_of..
-                                  ..handler..) => ..consumer..
-      (provided
-        (client/keyword-deserializer) => ..keyword_deserializer..
-        (client/edn-deserializer) => ..value_deserializer..
-        (async/consumer {:bootstrap.servers "localhost:9092"
-                         :group.id ..type_of..}
-                        ..keyword_deserializer..
-                        ..value_deserializer..) => [..output..
-                                                    ..control..]
-        (->KafkaConsumerController ..output.. ..control..) => ..consumer..
-        (#'consumer/register-consumer ..type_of..
-                                      ..consumer..) => ..consumer..
-        (#'consumer/listen ..type_of..
-                           ..consumer..
-                           ..handler..) => irrelevant)))
+    (#'consumer/consumer ..type_of..
+                         ..handler..) => ..consumer..
+    (provided
+      (client/keyword-deserializer) => ..keyword_deserializer..
+      (client/edn-deserializer) => ..value_deserializer..
+      (async/consumer {:bootstrap.servers "localhost:9092"
+                       :group.id ..type_of..}
+                      ..keyword_deserializer..
+                      ..value_deserializer..) => [..output..
+                                                  ..control..]
+      (->KafkaConsumerController ..output.. ..control..) => ..consumer..
+      (#'consumer/register-consumer ..type_of..
+                                    ..consumer..) => ..consumer..
+      (#'consumer/listen ..type_of..
+                         ..consumer..
+                         ..handler..) => irrelevant)))

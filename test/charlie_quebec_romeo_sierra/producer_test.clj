@@ -34,7 +34,7 @@
 
   (fact
     "should create producer"
-    (#'producer/create-producer) => ..producer..
+    (#'producer/producer) => ..producer..
     (provided
       (client/producer {:bootstrap.servers "localhost:9092"}
                        :keyword
