@@ -7,7 +7,9 @@
 
 (defprotocol ConsumerControl
   (record-channel [this])
+  (subscribe [this topic])
   (unsubscribe [this])
+  (commit [this])
   (stop [this]))
 
 (defrecord ConsumerController
@@ -15,8 +17,12 @@
   ConsumerControl
   (record-channel [this]
     record_channel)
+  (subscribe [this topic]
+    (put! control {:op :subscribe :topic topic}))
   (unsubscribe [this]
     (put! control {:op :unsubscribe}))
+  (commit [this]
+    (put! control {:op :commit}))
   (stop [this]
     (put! control {:op :stop})))
 

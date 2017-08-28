@@ -26,12 +26,28 @@
     "Consumer"
 
     (fact
+      "should subscribe"
+      (let [control (chan)
+            consumer (->ConsumerController control anything)]
+        (.subscribe consumer ..topic..) => irrelevant
+        (provided
+          (put! control {:op :subscribe :topic ..topic..}) => irrelevant)))
+
+    (fact
       "should unsubscribe"
       (let [control (chan)
             consumer (->ConsumerController control anything)]
         (.unsubscribe consumer) => irrelevant
         (provided
           (put! control {:op :unsubscribe}) => irrelevant)))
+
+    (fact
+      "should commit"
+      (let [control (chan)
+            consumer (->ConsumerController control anything)]
+        (.commit consumer) => irrelevant
+        (provided
+          (put! control {:op :commit}) => irrelevant)))
 
     (fact
       "should stop"
