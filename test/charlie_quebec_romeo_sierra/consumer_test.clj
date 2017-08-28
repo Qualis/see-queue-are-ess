@@ -64,15 +64,6 @@
                          anything)) => ..output..))
 
   (fact
-    "should register consumer"
-    (#'consumer/register-consumer ..type_of.. ..consumer..)
-    @consumer/consumers => {..type_of.. ..consumer..})
-
-  (fact
-    "should return registered consumer"
-    (#'consumer/register-consumer ..type_of.. ..consumer..) => ..consumer..)
-
-  (fact
     "should create consumer"
     (#'consumer/consumer ..type_of..
                          ..handler..) => ..consumer..
@@ -85,8 +76,6 @@
                       ..value_deserializer..) => [..output..
                                                   ..control..]
       (->KafkaConsumerController ..output.. ..control..) => ..consumer..
-      (#'consumer/register-consumer ..type_of..
-                                    ..consumer..) => ..consumer..
       (#'consumer/listen ..type_of..
                          ..consumer..
                          ..handler..) => irrelevant)))

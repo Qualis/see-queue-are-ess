@@ -3,8 +3,6 @@
             [kinsky.async :as async]
             [clojure.core.async :refer [go-loop <! put!]] ))
 
-(def consumers (atom {}))
-
 (defprotocol ConsumerController
   (output-channel [this])
   (subscribe [this topic])
@@ -26,11 +24,6 @@
   (stop [this]
     (put! control {:op :stop})))
 
-(defn- register-consumer
-  [type_of consumer]
-  (swap! consumers assoc type_of consumer)
-  consumer)
-
 (defn- listen
   [type_of consumer handler]
   (go-loop
@@ -49,11 +42,9 @@
                             :group.id type_of}
                            (client/keyword-deserializer)
                            (client/edn-deserializer))
-        consumer (register-consumer
-                   type_of
-                   (->KafkaConsumerController
-                     output
-                     control))]
+        consumer (->KafkaConsumerController
+                   output
+                   control)]
     (listen type_of
             consumer
             handler)
