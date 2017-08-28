@@ -1,6 +1,6 @@
 (ns charlie-quebec-romeo-sierra.consumer-test
   (:require [charlie-quebec-romeo-sierra.consumer :as consumer
-             :refer [->ConsumerController]]
+             :refer [->KafkaConsumerController]]
             [charlie-quebec-romeo-sierra.event :as event]
             [charlie-quebec-romeo-sierra.aggregate :as aggregate]
             [kinsky.client :as client]
@@ -19,16 +19,16 @@
 
 (facts
   (require '[charlie-quebec-romeo-sierra.consumer :as consumer
-             :refer [->ConsumerController]]
+             :refer [->KafkaConsumerController]]
            :reload)
 
   (facts
-    "Consumer"
+    "Kafka consumer controller"
 
     (fact
       "should subscribe"
       (let [control (chan)
-            consumer (->ConsumerController control anything)]
+            consumer (->KafkaConsumerController control anything)]
         (.subscribe consumer ..topic..) => irrelevant
         (provided
           (put! control {:op :subscribe :topic ..topic..}) => irrelevant)))
@@ -36,7 +36,7 @@
     (fact
       "should unsubscribe"
       (let [control (chan)
-            consumer (->ConsumerController control anything)]
+            consumer (->KafkaConsumerController control anything)]
         (.unsubscribe consumer) => irrelevant
         (provided
           (put! control {:op :unsubscribe}) => irrelevant)))
@@ -44,7 +44,7 @@
     (fact
       "should commit"
       (let [control (chan)
-            consumer (->ConsumerController control anything)]
+            consumer (->KafkaConsumerController control anything)]
         (.commit consumer) => irrelevant
         (provided
           (put! control {:op :commit}) => irrelevant)))
@@ -52,14 +52,14 @@
     (fact
       "should stop"
       (let [control (chan)
-            consumer (->ConsumerController control anything)]
+            consumer (->KafkaConsumerController control anything)]
         (.stop consumer) => irrelevant
         (provided
           (put! control {:op :stop}) => irrelevant)))
 
     (fact
       "should return record channel"
-        (.record-channel (->ConsumerController
+        (.record-channel (->KafkaConsumerController
                            ..control..
                            ..record_channel..)) => ..record_channel..))
 
