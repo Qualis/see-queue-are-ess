@@ -5,8 +5,9 @@
                                           ->SimpleAggregateFactory]]
             [charlie-quebec-romeo-sierra.command :as command]
             [charlie-quebec-romeo-sierra.aggregate :as aggregate]
-            [charlie-quebec-romeo-sierra.consumer :as consumer])
-  (:use [midje.sweet :only [fact => provided]]))
+            [charlie-quebec-romeo-sierra.consumer :as consumer]
+            [clojure.core.async :refer [chan <!! >!!]])
+  (:use [midje.sweet :only [fact => provided irrelevant]]))
 
 (fact
   "should be able to construct command"
@@ -34,12 +35,10 @@
 
 (command/register-handler core/TYPE_OF (->SimpleCommandHandler))
 
-(defn handle-event
-  [event]
-  (clojure.pprint/pprint event))
-
-(consumer/consumer "simple" handle-event)
-
 (fact
   "should process command"
-  (command/process (->SimpleCommand)) => nil)
+  (let [handle_event_channel (chan)]
+    (consumer/consumer "simple" (fn [event]
+                                  (>!! handle_event_channel event)))
+    (command/process (->SimpleCommand))
+    (<!! handle_event_channel) => irrelevant))

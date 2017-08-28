@@ -9,4 +9,5 @@
 
   :profiles {:dev
              {:aliases {"test" "midje"}
+              :plugins [[lein-midje "3.2.1"]]
               :dependencies [[midje "1.8.3"]]}})
