@@ -2,11 +2,13 @@
   (:require [kinsky.client :as client]
             [charlie-quebec-romeo-sierra.repository :as repository]))
 
-(defn- producer
+(defn- create-producer
   []
   (client/producer {:bootstrap.servers "localhost:9092"}
                    :keyword
                    :edn))
+
+(def producer (memoize create-producer))
 
 (defn- valid?
   [aggregates events]
