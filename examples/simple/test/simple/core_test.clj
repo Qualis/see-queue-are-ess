@@ -7,7 +7,7 @@
             [charlie-quebec-romeo-sierra.aggregate :as aggregate]
             [charlie-quebec-romeo-sierra.consumer :as consumer]
             [clojure.core.async :refer [chan <!! >!!]])
-  (:use [midje.sweet :only [fact => provided irrelevant]]))
+  (:use [midje.sweet :only [fact => provided irrelevant contains]]))
 
 (fact
   "should be able to construct command"
@@ -37,8 +37,14 @@
 
 (fact
   "should process command"
-  (let [handle_event_channel (chan)]
-    (consumer/consumer "simple" (fn [event]
-                                  (>!! handle_event_channel event)))
+  (let [handle_event_channel (chan)
+        consumer (consumer/consumer "simple"
+                                    (fn [event]
+                                      (>!! handle_event_channel event)))]
     (command/process (->SimpleCommand))
-    (<!! handle_event_channel) => irrelevant))
+    (<!! handle_event_channel) => (contains
+                                    {:key :34fa3c0c-8786-11e7-bb31-be2e44b06b34
+                                     :topic "simple"
+                                     :type :record
+                                     :value {:coconuts true}})
+    (.stop consumer)))
