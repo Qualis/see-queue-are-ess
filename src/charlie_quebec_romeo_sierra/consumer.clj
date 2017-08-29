@@ -30,7 +30,7 @@
     []
     (when-let [record (<! (.output-channel consumer))]
       (when (= (:type record) :record)
-        (handler record))
+        (handler (select-keys record [:key :value])))
       (recur)))
   (.subscribe consumer type_of)
   (.commit consumer))

@@ -44,7 +44,5 @@
     (command/process (->SimpleCommand))
     (<!! handle_event_channel) => (contains
                                     {:key :34fa3c0c-8786-11e7-bb31-be2e44b06b34
-                                     :topic "simple"
-                                     :type :record
                                      :value {:coconuts true}})
     (.stop consumer)))
