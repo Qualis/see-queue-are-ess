@@ -6,8 +6,6 @@ NOTE: this project uses git submodules so you will want to clone recursively to 
 
 * `git clone --recursive git@github.com:svo/charlie-quebec-romeo-sierra.git`
 
-NOTE: The submodules are hosted on GitHub, ensure you have setup your GitHub access.
-
 ## Development environment
 
 Requirements:
