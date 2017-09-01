@@ -10,9 +10,9 @@ NOTE: this project uses git submodules so you will want to clone recursively to 
 
 Requirements:
 
-1. Ansible (2.1.1.0)
-2. Vagrant (1.7.4)
-3. VirtualBox (5.0.4 r102546)
+1. Ansible (2.2.2.0)
+2. Vagrant (1.9.3)
+3. VirtualBox (5.1.18 r114002)
 
 To perform provisioning and start using the development environment run:
 
