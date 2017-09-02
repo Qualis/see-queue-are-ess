@@ -6,7 +6,7 @@ lein do clean, deps
 
 lein ancient
 
-lein test
+MIDJE_COLORIZE=NONE lein test
 unit=$?
 echo_result "Unit Tests" $unit
 

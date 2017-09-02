@@ -19,7 +19,8 @@
               :dependencies [[org.clojure/tools.namespace "0.2.11"]
                              [marick/suchwow "6.0.0"
                               :exclusions [org.clojure/clojure org.clojure/clojurescript]]
-                             [midje "1.8.3"]]}
+                             [midje "1.8.3"]
+                             [midje-junit-formatter "0.1.0-SNAPSHOT"]]}
              :quality [:dev
                        {:injections [(require 'midje.config)
                                      (midje.config/change-defaults
