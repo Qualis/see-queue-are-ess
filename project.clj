@@ -15,7 +15,9 @@
                         "ancient" ["with-profile" "quality" "ancient"]
                         "quality" ["with-profile" "quality" "test"]}
               :plugins [[lein-midje "3.2.1"
-                         :exclusions [org.clojure/tools.namespace]]]
+                         :exclusions [org.clojure/tools.namespace]]
+                        [lein-cloverage "1.0.9"
+                         :exclusions [org.clojure/clojure]]]
               :dependencies [[org.clojure/tools.namespace "0.2.11"]
                              [marick/suchwow "6.0.0"
                               :exclusions [org.clojure/clojure org.clojure/clojurescript]]

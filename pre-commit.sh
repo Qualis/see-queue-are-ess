@@ -13,3 +13,5 @@ echo_result "Unit Tests" $unit
 lein quality
 quality=$?
 echo_result "Quality Tests" $quality
+
+lein cloverage --runner :midje
