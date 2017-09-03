@@ -14,4 +14,5 @@ lein quality
 quality=$?
 echo_result "Quality Tests" $quality
 
-lein cloverage --runner :midje
+lein cloverage --runner :midje --lcov
+python bash/lcov_cobertura.py target/coverage/lcov.info --output target/coverage/coverage.xml
