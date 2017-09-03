@@ -8,6 +8,8 @@ git:
 
 build:
   ci:
+    - cp .midje.clj.ci .midje.clj
     - ./pre-commit.sh
+    - rm .midje.clj
     - mv report.xml shippable/testresults
     - mv target/coverage/coverage.xml shippable/codecoverage/coverage.xml
