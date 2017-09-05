@@ -14,12 +14,17 @@
       lineinfile: dest=/var/lib/jenkins/config.xml regexp='<useSecurity>true</useSecurity>' line='<useSecurity>false</useSecurity>'
       become: yes
 
+    - name: Pause to allow Update Centre refresh to complete
+      pause: seconds=15
+
     - name: Install Jenkins plugins
       shell: java -jar ~/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{ item }}
       become: yes
       with_items:
       - git
       - thinBackup
+      - ansicolor
+      - cobertura
       notify:
       - Restart Jenkins
 
