@@ -11,10 +11,10 @@
 (defprotocol EventHandler
   (handle [this event]))
 
-(defn- register-handler
+(defn register-handler
   [type_of handler]
-  (swap! handlers assoc type_of handler))
+  (swap! handlers update-in [type_of] #(conj % handler)))
 
-(defn- find-handler
+(defn find-handler
   [type_of]
   (get @handlers type_of))

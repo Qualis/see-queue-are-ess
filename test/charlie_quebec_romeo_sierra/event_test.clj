@@ -7,6 +7,10 @@
 
 (facts
 
+  (require '[charlie-quebec-romeo-sierra.event
+             :as event
+             :refer :all] :reload)
+
   (defrecord-openly TestEvent []
     event/Event
     (data [this] ..data..)
@@ -35,13 +39,25 @@
     (type-of (->TestEvent)) => ..type..)
 
   (fact
-    "should register handler"
-    (let [handler (->TestEventHandler)]
-      (#'event/register-handler ..type_of.. handler)
-      @event/handlers => {..type_of.. handler}))
+    "should register first handler"
+    (let [handler (->TestEventHandler)
+          handlers (list handler)]
+      (event/register-handler ..type_of.. handler)
+      @event/handlers => {..type_of.. handlers}))
+
+  (fact
+    "should register new handler"
+      (let [existing_handler (reify event/EventHandler)
+            handler (->TestEventHandler)
+            handlers (list handler existing_handler)]
+        (with-redefs [event/handlers (atom {..type_of.. (list
+                                                          existing_handler)})]
+          (event/register-handler ..type_of.. handler)
+          @event/handlers => {..type_of.. handlers})))
 
   (fact
     "should find handler"
-    (let [handler (->TestEventHandler)]
-      (with-redefs [event/handlers (atom {..type_of.. handler})]
-        (#'event/find-handler ..type_of..) => handler))))
+    (let [handler (->TestEventHandler)
+          handlers (list handler)]
+      (with-redefs [event/handlers (atom {..type_of.. handlers})]
+        (event/find-handler ..type_of..) => handlers))))

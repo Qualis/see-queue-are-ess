@@ -42,7 +42,7 @@
     (process (->TestAggregate) ..event..) => ..result..)
 
   (fact
-    "should find aggregate"
+    "should create aggregate"
     (with-redefs [aggregate/aggregates
                   (atom {..type_of.. (->TestAggregateFactory)})]
       (aggregate/get-aggregate ..type_of..

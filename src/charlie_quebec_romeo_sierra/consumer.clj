@@ -1,7 +1,8 @@
 (ns charlie-quebec-romeo-sierra.consumer
   (:require [kinsky.client :as client]
             [kinsky.async :as async]
-            [clojure.core.async :refer [go-loop <! put!]] ))
+            [charlie-quebec-romeo-sierra.event :as event]
+            [clojure.core.async :refer [go-loop <! put!]]))
 
 (defprotocol ConsumerController
   (output-channel [this])
@@ -10,7 +11,7 @@
   (commit [this])
   (stop [this]))
 
-(defrecord KafkaConsumerController
+(deftype KafkaConsumerController
   [output control]
   ConsumerController
   (output-channel [this]
@@ -30,7 +31,10 @@
     []
     (when-let [record (<! (.output-channel consumer))]
       (when (= (:type record) :record)
-        (handler (select-keys record [:key :value])))
+        (let [event (select-keys record [:key :value])]
+          (handler event)
+          (doseq [event_handler (event/find-handler type_of)]
+            (.handle event_handler event))))
       (recur)))
   (.subscribe consumer type_of)
   (.commit consumer))
