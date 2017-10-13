@@ -4,14 +4,34 @@
                                           ->SimpleEvent
                                           ->SimpleAggregateFactory]]
             [charlie-quebec-romeo-sierra.command :as command]
+            [charlie-quebec-romeo-sierra.event :as event]
             [charlie-quebec-romeo-sierra.aggregate :as aggregate]
             [charlie-quebec-romeo-sierra.consumer :as consumer]
+            [clj-uuid :as uuid]
             [clojure.core.async :refer [promise-chan <!! >!!]])
-  (:use [midje.sweet :only [fact => provided irrelevant contains]]))
+  (:use [midje.sweet :only [fact => provided irrelevant contains]])
+  (:import [java.util UUID]))
+
+(require '[simple.core :as core :refer [->SimpleCommand
+                                        ->SimpleCommandHandler
+                                        ->SimpleEvent
+                                        ->SimpleEventHandler
+                                        ->SimpleAggregateFactory]]
+         :reload)
+
+(def handle_event_channel (promise-chan))
+
+(aggregate/register-aggregate core/TYPE_OF (->SimpleAggregateFactory))
+
+(command/register-handler core/TYPE_OF (->SimpleCommandHandler))
+
+(event/register-handler core/TYPE_OF (->SimpleEventHandler handle_event_channel))
 
 (fact
   "should be able to construct command"
-  (#'core/command) => (->SimpleCommand))
+  (#'core/command) => ..command..
+  (provided
+    (->SimpleCommand) => ..command..))
 
 (fact
   "should have expected type on command"
@@ -20,30 +40,37 @@
 (fact
   "should create expected events"
   (.handle (->SimpleCommandHandler)
-           (->SimpleCommand)) => (list (->SimpleEvent
-                                         "simple"
-                                         "34fa3c0c-8786-11e7-bb31-be2e44b06b34"
-                                         {:coconuts true})))
+           (->SimpleCommand)) => (list ..simple_event..)
+  (provided
+    (uuid/v1) => ..uuid..
+    (->SimpleEvent
+      "simple"
+      :..uuid..
+      {:coconuts true}) => ..simple_event..))
+
+(fact
+  "should handle created events"
+  (let [channel (promise-chan)]
+    (.handle (->SimpleEventHandler channel)
+             {:key ..uuid..
+              :value ..data..})
+    (<!! channel) => "aggregate-identifier: ..uuid.., data: ..data.."))
 
 (fact
   "should process command"
-  (core/create ..command..) => ..result..
+  (core/process-command ..command..) => ..result..
   (provided
     (command/process ..command..) => ..result..))
 
-(aggregate/register-aggregate "simple" (->SimpleAggregateFactory))
-
-(command/register-handler core/TYPE_OF (->SimpleCommandHandler))
-
-(def handle_event_channel (promise-chan))
-
 (fact
-  "should process command"
-  (let [consumer (consumer/consumer "simple"
-                                    (fn [event]
-                                      (prn (>!! handle_event_channel event))))]
-    (command/process (->SimpleCommand))
-    (<!! handle_event_channel) => (contains
-                                    {:key :34fa3c0c-8786-11e7-bb31-be2e44b06b34
-                                     :value {:coconuts true}})
-    (.stop consumer)))
+  "should handle event"
+  (consumer/consumer core/TYPE_OF (fn [event]))
+  (let [uuid_string "9dd43770-af98-11e7-8f37-758b0816f6b7"
+        uuid (UUID/fromString uuid_string)]
+    (do
+      (command/process (->SimpleCommand))
+      (<!! handle_event_channel)) => (str "aggregate-identifier: "
+                                          ":" uuid_string ", "
+                                          "data: {:coconuts true}")
+    (provided
+      (uuid/v1) => uuid)))

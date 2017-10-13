@@ -2,7 +2,9 @@
   (:require [charlie-quebec-romeo-sierra.command :as command]
             [charlie-quebec-romeo-sierra.event :as event]
             [charlie-quebec-romeo-sierra.aggregate :as aggregate]
-            [charlie-quebec-romeo-sierra.consumer :as consumer]))
+            [charlie-quebec-romeo-sierra.consumer :as consumer]
+            [clj-uuid :as uuid]
+            [clojure.core.async :refer [>!!]]))
 
 (def ^:const TYPE_OF "simple")
 
@@ -14,9 +16,9 @@
   (data [_] data)
   (type-of [_] type_of))
 
-(defrecord SimpleAggregate [type_of
-                            identifier
-                            data]
+(deftype SimpleAggregate [type_of
+                          identifier
+                          data]
   aggregate/Aggregate
   (data [_] @data)
   (identifier [_] identifier)
@@ -26,31 +28,39 @@
                           (swap! data merge (.data event))
                           this)))
 
-(defrecord SimpleAggregateFactory []
+(deftype SimpleAggregateFactory []
   aggregate/AggregateFactory
   (create [_ type_of identifier] (->SimpleAggregate type_of
                                                     identifier
                                                     (atom {}))))
 
 (defn- event
-  [type_of]
+  [type_of aggregate_identifier]
   (list (->SimpleEvent type_of
-                       "34fa3c0c-8786-11e7-bb31-be2e44b06b34"
+                       (keyword aggregate_identifier)
                        {:coconuts true})))
 
-(defrecord SimpleCommand []
+(deftype SimpleCommand []
   command/Command
   (type-of [_] TYPE_OF))
 
-(defrecord SimpleCommandHandler []
+(deftype SimpleCommandHandler []
   command/CommandHandler
   (handle [_ command]
-    (event (.type-of command))))
+    (event (.type-of command)
+           (str (uuid/v1)))))
+
+(deftype SimpleEventHandler [channel]
+  event/EventHandler
+  (handle [_ event]
+    (>!! channel (clojure.string/join
+                   ", " [(str "aggregate-identifier: " (:key event))
+                         (str "data: " (:value event))]))))
 
 (defn- command
   []
   (->SimpleCommand))
 
-(defn create
+(defn process-command
   [command]
   (command/process command))
