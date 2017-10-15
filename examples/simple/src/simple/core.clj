@@ -6,19 +6,19 @@
             [clj-uuid :as uuid]
             [clojure.core.async :refer [>!!]]))
 
-(def ^:const TYPE_OF "simple")
+(def ^:const TYPE_OF "credit")
 
-(defrecord SimpleEvent [type_of
-                        aggregate_identifier
-                        data]
+(defrecord AccountCreditedEvent [type_of
+                                 aggregate_identifier
+                                 data]
   event/Event
   (aggregate-identifier [this] aggregate_identifier)
   (data [_] data)
   (type-of [_] type_of))
 
-(deftype SimpleAggregate [type_of
-                          identifier
-                          data]
+(deftype Account [type_of
+                  identifier
+                  data]
   aggregate/Aggregate
   (data [_] @data)
   (identifier [_] identifier)
@@ -28,38 +28,39 @@
                           (swap! data merge (.data event))
                           this)))
 
-(deftype SimpleAggregateFactory []
+(deftype AccountFactory []
   aggregate/AggregateFactory
-  (create [_ type_of identifier] (->SimpleAggregate type_of
-                                                    identifier
-                                                    (atom {}))))
+  (create [_ type_of identifier] (->Account type_of
+                                            identifier
+                                            (atom {}))))
 
-(defn- event
-  [type_of aggregate_identifier]
-  (list (->SimpleEvent type_of
-                       (keyword aggregate_identifier)
-                       {:coconuts true})))
+(defn- credit-event
+  [type_of aggregate_identifier amount]
+  (list (->AccountCreditedEvent type_of
+                                (keyword aggregate_identifier)
+                                {:amount amount})))
 
-(deftype SimpleCommand []
+(defrecord CreditAccountCommand [account amount]
   command/Command
   (type-of [_] TYPE_OF))
 
-(deftype SimpleCommandHandler []
+(deftype CreditAccountCommandHandler []
   command/CommandHandler
   (handle [_ command]
-    (event (.type-of command)
-           (str (uuid/v1)))))
+    (credit-event (.type-of command)
+                  (:account command)
+                  (:amount command))))
 
-(deftype SimpleEventHandler [channel]
+(deftype AccountCreditedEventHandler [channel]
   event/EventHandler
   (handle [_ event]
     (>!! channel (clojure.string/join
-                   ", " [(str "aggregate-identifier: " (:key event))
-                         (str "data: " (:value event))]))))
+                   ", " [(str "account: " (:key event))
+                         (str "credit: " (:amount(:value event)))]))))
 
-(defn- command
-  []
-  (->SimpleCommand))
+(defn command
+  [account amount]
+  (->CreditAccountCommand account amount))
 
 (defn process-command
   [command]
