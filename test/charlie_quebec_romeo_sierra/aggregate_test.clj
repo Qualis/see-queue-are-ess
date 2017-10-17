@@ -42,14 +42,22 @@
     (process (->TestAggregate) ..event..) => ..result..)
 
   (fact
-    "should create aggregate"
-    (with-redefs [aggregate/aggregates
-                  (atom {..type_of.. (->TestAggregateFactory)})]
-      (aggregate/get-aggregate ..type_of..
-                               ..identifier..) => (->TestAggregate)))
-
-  (fact
     "should register aggregate"
     (let [aggregate_constructor ->TestAggregate]
       (aggregate/register-aggregate ..type_of.. aggregate_constructor)
-      @aggregate/aggregates => {..type_of.. aggregate_constructor})))
+      @aggregate/aggregates => {..type_of.. aggregate_constructor}))
+
+  (facts
+    "with aggregates"
+    (with-redefs [aggregate/aggregates
+                  (atom {..type_of.. (->TestAggregateFactory)})]
+
+    (fact
+      "should create aggregate"
+        (aggregate/get-aggregate ..type_of..
+                                 ..identifier..) => (->TestAggregate)))
+
+    (fact
+      "should clear aggregates"
+      (aggregate/clear)
+      @aggregate/aggregates => {})))

@@ -45,19 +45,26 @@
       (event/register-handler ..type_of.. handler)
       @event/handlers => {..type_of.. handlers}))
 
-  (fact
-    "should register new handler"
-      (let [existing_handler (reify event/EventHandler)
-            handler (->TestEventHandler)
-            handlers (list handler existing_handler)]
-        (with-redefs [event/handlers (atom {..type_of.. (list
-                                                          existing_handler)})]
-          (event/register-handler ..type_of.. handler)
-          @event/handlers => {..type_of.. handlers})))
+  (facts
+    "with handlers registered"
+    (let [existing_handler (reify event/EventHandler)]
+      (with-redefs [event/handlers (atom {..type_of.. (list
+                                                        existing_handler)})]
 
-  (fact
-    "should find handler"
-    (let [handler (->TestEventHandler)
-          handlers (list handler)]
-      (with-redefs [event/handlers (atom {..type_of.. handlers})]
-        (event/find-handler ..type_of..) => handlers))))
+        (fact
+          "should register new handler"
+          (let [handler (->TestEventHandler)
+                handlers (list handler existing_handler)]
+            (event/register-handler ..type_of.. handler)
+            @event/handlers => {..type_of.. handlers}))))
+
+    (fact
+      "should find handler"
+      (let [handler (->TestEventHandler)
+            handlers (list handler)]
+        (event/find-handler ..type_of..) => handlers))
+
+    (fact
+      "should clear handlers"
+      (event/clear)
+      @event/handlers => {})))

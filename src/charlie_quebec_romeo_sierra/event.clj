@@ -18,3 +18,7 @@
 (defn find-handler
   [type_of]
   (get @handlers type_of))
+
+(defn clear
+  []
+  (reset! handlers {}))

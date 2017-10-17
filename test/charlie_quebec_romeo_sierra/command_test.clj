@@ -36,12 +36,6 @@
         @command/handlers => {..type_of.. handler}))
 
     (fact
-      "should find handler"
-      (let [handler (->TestCommandHandler)]
-        (with-redefs [command/handlers (atom {..type_of.. handler})]
-          (#'command/find-handler ..type_of..) => handler)))
-
-    (fact
       "should handle command"
       (let [command (->TestCommand)
             handler (->TestCommandHandler)]
@@ -54,7 +48,22 @@
       (command/process ..command..) => ..result..
       (provided
         (#'command/generate-events ..command..) => ..events..
-        (producer/produce ..events..) => ..result..)))
+        (producer/produce ..events..) => ..result..))
+
+    (facts
+      "registered"
+
+      (let [handler (->TestCommandHandler)]
+        (with-redefs [command/handlers (atom {..type_of.. handler})]
+
+          (fact
+            "should find handler"
+            (#'command/find-handler ..type_of..) => handler)
+
+          (fact
+            "should clear handlers"
+            (command/clear)
+            @command/handlers => {})))))
 
   (facts
     "invalid commands and handlers"

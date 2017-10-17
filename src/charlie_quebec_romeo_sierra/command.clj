@@ -24,6 +24,10 @@
   [type_of handler]
   (swap! handlers assoc type_of handler))
 
+(defn clear
+  []
+  (reset! handlers {}))
+
 (defn process
   [command]
   (producer/produce (generate-events command)))

@@ -19,3 +19,7 @@
 (defn get-aggregate
   [type_of identifier]
   (.create (get @aggregates type_of) type_of identifier))
+
+(defn clear
+  []
+  (reset! aggregates {}))
