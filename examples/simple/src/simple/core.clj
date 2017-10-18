@@ -3,7 +3,6 @@
             [charlie-quebec-romeo-sierra.event :as event]
             [charlie-quebec-romeo-sierra.aggregate :as aggregate]
             [charlie-quebec-romeo-sierra.consumer :as consumer]
-            [clj-uuid :as uuid]
             [clojure.core.async :refer [>!!]]))
 
 (def ^:const TYPE_OF "credit")
@@ -25,14 +24,17 @@
   (type-of [_] type_of)
   (valid? [_ event] true)
   (process [this event] (do
-                          (swap! data merge (.data event))
+                          (swap! data
+                                 update-in
+                                 [:balance]
+                                 #(+ % (:amount (.data event))))
                           this)))
 
 (deftype AccountFactory []
   aggregate/AggregateFactory
   (create [_ type_of identifier] (->Account type_of
                                             identifier
-                                            (atom {}))))
+                                            (atom {:balance 0}))))
 
 (defn- credit-event
   [type_of aggregate_identifier amount]

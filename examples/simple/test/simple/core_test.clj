@@ -3,14 +3,16 @@
                                           ->CreditAccountCommandHandler
                                           ->AccountCreditedEvent
                                           ->AccountCreditedEventHandler
-                                          ->AccountFactory]]
+                                          ->AccountFactory
+                                          ->Account]]
             [charlie-quebec-romeo-sierra.command :as command]
+            [charlie-quebec-romeo-sierra.repository :as repository]
             [charlie-quebec-romeo-sierra.event :as event]
             [charlie-quebec-romeo-sierra.aggregate :as aggregate]
             [charlie-quebec-romeo-sierra.consumer :as consumer]
             [clj-uuid :as uuid]
             [clojure.core.async :refer [promise-chan <!! >!!]])
-  (:use [midje.sweet :only [facts fact => provided irrelevant contains]])
+  (:use [midje.sweet :only [facts fact => provided irrelevant against-background]])
   (:import [java.util UUID]))
 
 (fact
@@ -49,28 +51,61 @@
     (command/process ..command..) => ..result..))
 
 (facts
-  "when aggregate and handlers registered"
+  "Account"
+
+  (fact
+    "should process event"
+    (.data (.process (->Account ..type_of.. ..identifier.. (atom {:balance 0}))
+                     (->AccountCreditedEvent ..type_of..
+                                             ..identifier..
+                                             {:amount 100}))) => {:balance 100}))
+
+(facts
+  "with aggregate and command handlers registered"
 
   (require '[simple.core :as core :refer [->CreditAccountCommand
                                           ->CreditAccountCommandHandler
                                           ->AccountCreditedEvent
                                           ->AccountCreditedEventHandler
-                                          ->AccountFactory]]
+                                          ->AccountFactory
+                                          ->Account]]
            :reload)
 
-  (fact
-    "should handle credit event"
-    (let [uuid_string "9dd43770-af98-11e7-8f37-758b0816f6b7"
-          uuid (UUID/fromString uuid_string)
-          handle_event_channel (promise-chan)]
-      (aggregate/register-aggregate core/TYPE_OF (->AccountFactory))
-      (command/register-handler core/TYPE_OF (->CreditAccountCommandHandler))
-      (event/register-handler core/TYPE_OF (->AccountCreditedEventHandler
-                                             handle_event_channel))
-      (consumer/consumer core/TYPE_OF (fn [event]))
-      (do
-        (core/process-command (core/command uuid_string
-                                            100))
-        (<!! handle_event_channel)) => (str "account: "
-                                            ":" uuid_string ", "
-                                            "credit: 100"))))
+  (defn- clear-registered
+    []
+    (aggregate/clear)
+    (command/clear)
+    (event/clear)
+    (aggregate/register-aggregate core/TYPE_OF (->AccountFactory))
+    (command/register-handler core/TYPE_OF (->CreditAccountCommandHandler)))
+
+  (against-background
+    [(before :facts (clear-registered))]
+
+    (fact
+      "should propagate to credit event handler"
+      (let [uuid (str (uuid/v1))
+            handle_event_channel (promise-chan)]
+        (event/register-handler core/TYPE_OF (->AccountCreditedEventHandler
+                                               handle_event_channel))
+        (consumer/consumer core/TYPE_OF (fn [event]))
+        (do
+          (core/process-command (core/command uuid
+                                              100))
+          (<!! handle_event_channel)) => (str "account: "
+                                              ":" uuid ", "
+                                              "credit: 100")))
+
+    (fact
+      "should load account aggregate balance result"
+      (let [uuid (str (uuid/v1))
+            handle_event_channel (promise-chan)]
+        (event/register-handler core/TYPE_OF (->AccountCreditedEventHandler
+                                               handle_event_channel))
+        (consumer/consumer core/TYPE_OF (fn [event]))
+        (core/process-command (core/command uuid 125))
+        (core/process-command (core/command uuid 150))
+        (<!! handle_event_channel)
+        (<!! handle_event_channel)
+        (.data (repository/load-aggregate core/TYPE_OF
+                                          uuid)) => {:balance 275}))))
